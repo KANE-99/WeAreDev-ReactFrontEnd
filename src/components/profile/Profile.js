@@ -14,7 +14,8 @@ const Profile = ({
 	profile: { profile, loading },
 	auth,
 	getProfileByID,
-	match
+	match,
+	location
 }) => {
 	useEffect(() => {
 		getProfileByID(match.params.id);
@@ -26,9 +27,19 @@ const Profile = ({
 				<Spinner />
 			) : (
 				<Fragment>
-					<Link to='/profiles' className='btn btn-light'>
-						Back To Profiles
-					</Link>
+					{location && location.state && location.state.from === 'post' ? (
+						<Link to='/posts' className='btn btn-light'>
+							Back To Posts
+						</Link>
+					) : location && location.state && location.state.from === 'postid' ? (
+						<Link to={`/posts/${location.state.id}`} className='btn btn-light'>
+							Back To Post
+						</Link>
+					) : (
+						<Link to='/profiles' className='btn btn-light'>
+							Back To Profiles
+						</Link>
+					)}
 
 					{auth.isAuthenticated &&
 						!auth.loading &&
@@ -78,6 +89,15 @@ const Profile = ({
 			)}
 		</Fragment>
 	);
+};
+
+Profile.defaultProps = {
+	location: {
+		state: {
+			from: 'profile',
+			id: null
+		}
+	}
 };
 
 Profile.propTypes = {
